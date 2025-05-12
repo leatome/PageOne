@@ -29,7 +29,7 @@ jobs:
           php composer.phar install --prefer-dist --no-interaction --no-progress
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse -c phpstan.neon
+        run: vendor/bin/phpstan analyse -c phpstan.dist.neon
 
   phpunit:
     name: PHPUnit Tests
