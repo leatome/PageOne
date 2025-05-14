@@ -28,6 +28,21 @@ class Book
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $coverUrl = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $htmlUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $epubUrl = null;
+
+    #[ORM\Column(type: 'json')]
+    private array $subjects = [];
+
+    #[ORM\Column(type: 'json')]
+    private array $bookshelves = [];
+
+    #[ORM\Column]
+    private int $downloadCount = 0;
+
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $publishDate = null;
 
@@ -105,6 +120,66 @@ class Book
         return $this;
     }
 
+    public function getHtmlUrl(): ?string
+    {
+        return $this->htmlUrl;
+    }
+
+    public function setHtmlUrl(?string $htmlUrl): static
+    {
+        $this->htmlUrl = $htmlUrl;
+
+        return $this;
+    }
+
+    public function getEpubUrl(): ?string
+    {
+        return $this->epubUrl;
+    }
+
+    public function setEpubUrl(?string $epubUrl): static
+    {
+        $this->epubUrl = $epubUrl;
+
+        return $this;
+    }
+
+    public function getSubjects(): array
+    {
+        return $this->subjects;
+    }
+
+    public function setSubjects(array $subjects): static
+    {
+        $this->subjects = $subjects;
+
+        return $this;
+    }
+
+    public function getBookshelves(): array
+    {
+        return $this->bookshelves;
+    }
+
+    public function setBookshelves(array $bookshelves): static
+    {
+        $this->bookshelves = $bookshelves;
+
+        return $this;
+    }
+
+    public function getDownloadCount(): int
+    {
+        return $this->downloadCount;
+    }
+
+    public function setDownloadCount(int $downloadCount): static
+    {
+        $this->downloadCount = $downloadCount;
+
+        return $this;
+    }
+
     public function getPublishDate(): ?\DateTime
     {
         return $this->publishDate;
@@ -150,7 +225,6 @@ class Book
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getBook() === $this) {
                 $comment->setBook(null);
             }
@@ -180,7 +254,6 @@ class Book
     public function removeRating(Rating $rating): static
     {
         if ($this->ratings->removeElement($rating)) {
-            // set the owning side to null (unless already changed)
             if ($rating->getBook() === $this) {
                 $rating->setBook(null);
             }
