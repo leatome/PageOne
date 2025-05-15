@@ -21,7 +21,7 @@ class Category
     /**
      * @var Collection<int, Book>
      */
-    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'category')]
+    #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'categories')]
     private Collection $books;
 
     public function __construct()
@@ -58,7 +58,7 @@ class Category
     {
         if (!$this->books->contains($book)) {
             $this->books->add($book);
-            $book->setCategory($this);
+            $book->addCategory($this);
         }
 
         return $this;
@@ -67,10 +67,7 @@ class Category
     public function removeBook(Book $book): static
     {
         if ($this->books->removeElement($book)) {
-            // set the owning side to null (unless already changed)
-            if ($book->getCategory() === $this) {
-                $book->setCategory(null);
-            }
+            $book->removeCategory($this);
         }
 
         return $this;
