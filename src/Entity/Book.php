@@ -16,13 +16,13 @@ class Book
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 512)]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     private ?string $author = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -43,11 +43,8 @@ class Book
     #[ORM\Column]
     private int $downloadCount = 0;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $publishDate = null;
-
-    #[ORM\ManyToOne(inversedBy: 'books')]
-    private ?Category $category = null;
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'books', cascade: ['persist'])]
+    private Collection $categories;
 
     /**
      * @var Collection<int, Comment>
@@ -63,6 +60,7 @@ class Book
 
     public function __construct()
     {
+        $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->ratings = new ArrayCollection();
     }
@@ -180,28 +178,28 @@ class Book
         return $this;
     }
 
-    public function getPublishDate(): ?\DateTime
+    public function addCategory(Category $category): static
     {
-        return $this->publishDate;
-    }
-
-    public function setPublishDate(?\DateTime $publishDate): static
-    {
-        $this->publishDate = $publishDate;
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addBook($this);
+        }
 
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function removeCategory(Category $category): static
     {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
+        if ($this->categories->removeElement($category)) {
+            $category->removeBook($this);
+        }
 
         return $this;
+    }
+
+    public function getCategories(): Collection
+    {
+        return $this->categories;
     }
 
     /**
