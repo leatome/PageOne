@@ -239,6 +239,12 @@ class Book
         return $this->ratings;
     }
 
+    public function getAverageRating(): float
+    {
+        $ratings = $this->ratings->map(fn($r) => $r->getRating())->toArray();
+        return count($ratings) ? array_sum($ratings) / count($ratings) : 0;
+    }
+
     public function addRating(Rating $rating): static
     {
         if (!$this->ratings->contains($rating)) {

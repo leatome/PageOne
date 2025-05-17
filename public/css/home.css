@@ -96,3 +96,22 @@ body {
     font-size: 0.95rem;
     line-height: 1.5;
 }
+
+/* Style pour les étoiles (rating) */
+.star-rating {
+    font-size: 2rem;
+    direction: ltr;
+    unicode-bidi: bidi-override;
+    display: inline-block;
+    user-select: none;
+}
+
+.star-rating .star {
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.star-rating .star.filled {
+    color: #f39c12;
+}
