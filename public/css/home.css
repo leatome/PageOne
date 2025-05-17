@@ -1,0 +1,98 @@
+/* Scroll horizontal fluide pour les livres */
+.scrolling-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* IE 10+ */
+}
+
+.scrolling-wrapper::-webkit-scrollbar {
+    display: none;              /* Chrome, Safari, Edge */
+}
+
+
+/* Style des cartes inline */
+.scrolling-wrapper .card {
+    display: inline-block;
+    margin-right: 1rem;
+    width: 160px;
+    border-radius: 0.75rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Image arrondie en haut de la carte */
+.scrolling-wrapper .card img {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* Titre centré sous chaque carte */
+.card-title {
+    font-size: 0.80rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+}
+
+body {
+    background-color: #dee2e6;
+}
+
+.book-details-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.book-cover {
+    width: 220px;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+}
+
+.book-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.book-author {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #666;
+    margin: 0.5rem 0 1rem;
+}
+
+.read-button {
+    margin: 1.5rem 0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.read-button:hover {
+    background-color: #0056b3;
+}
+
+.book-description {
+    max-width: 600px;
+    text-align: justify;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}

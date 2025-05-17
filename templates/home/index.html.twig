@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="mb-4">Nos catégories populaires</h1>
+
+    {% for category in categories %}
+        <section class="mb-5">
+            <h2 class="mb-3">{{ category.name }}</h2>
+            <div class="scrolling-wrapper">
+    {% for book in category.books %}
+        <div class="card">
+            <a href="{{ path('book_show', {id: book.id}) }}" class="card-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ book.title }}">
+                <img src="{{ book.coverUrl ?: 'https://via.placeholder.com/160x220?text=No+Image' }}" alt="{{ book.title }}" class="card-image img-thumbnail">
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+        </section>
+    {% endfor %}
+</div>
+{% endblock %}
