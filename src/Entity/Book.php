@@ -29,10 +29,7 @@ class Book
     private ?string $coverUrl = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $htmlUrl = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $epubUrl = null;
+    private ?string $textUrl = null;
 
     #[ORM\Column(type: 'json')]
     private array $subjects = [];
@@ -118,26 +115,14 @@ class Book
         return $this;
     }
 
-    public function getHtmlUrl(): ?string
+    public function getTextUrl(): ?string
     {
-        return $this->htmlUrl;
+        return $this->textUrl;
     }
 
-    public function setHtmlUrl(?string $htmlUrl): static
+    public function setTextUrl(?string $textUrl): static
     {
-        $this->htmlUrl = $htmlUrl;
-
-        return $this;
-    }
-
-    public function getEpubUrl(): ?string
-    {
-        return $this->epubUrl;
-    }
-
-    public function setEpubUrl(?string $epubUrl): static
-    {
-        $this->epubUrl = $epubUrl;
+        $this->textUrl = $textUrl;
 
         return $this;
     }

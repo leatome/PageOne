@@ -53,8 +53,7 @@ class ImportBooksCommand extends Command
                 $description = is_array($descriptionArray) && isset($descriptionArray[0]) ? $descriptionArray[0] : '';
                 $book->setDescription($description);
                 $book->setCoverUrl($item['formats']['image/jpeg'] ?? null);
-                $book->setHtmlUrl($item['formats']['text/html'] ?? null);
-                $book->setEpubUrl($item['formats']['application/epub+zip'] ?? null);
+                $book->setTextUrl($item['formats']['text/plain; charset=utf-8'] ?? null);
                 $book->setSubjects($item['subjects']);
                 $book->setBookshelves($item['bookshelves']);
 
