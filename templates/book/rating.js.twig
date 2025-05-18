@@ -1,0 +1,51 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const starsContainer = document.getElementById("star-rating");
+        const ratingInput = document.getElementById("rating-value");
+
+        let selectedRating = 0;
+
+        function renderStars(rating) {
+            starsContainer.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('i');
+                star.classList.add('bi', 'me-1');
+                star.dataset.value = i;
+
+                if (i <= rating) {
+                    star.classList.add('bi-star-fill', 'text-warning');
+                } else {
+                    star.classList.add('bi-star');
+                }
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        starsContainer.addEventListener('click', function (e) {
+            const value = parseInt(e.target.dataset.value);
+            if (!isNaN(value)) {
+                selectedRating = value;
+                ratingInput.value = value;
+                submitRating();
+                renderStars(value);
+            }
+        });
+
+        function submitRating() {
+            const formData = new FormData(document.getElementById('rating-form'));
+            fetch('{{ path('rate_book', { id: book.id }) }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("average-rating").innerText = "Note moyenne : " + data.average + "/5";
+                }
+            });
+        }
+
+        renderStars(0);
+    });
+</script>
