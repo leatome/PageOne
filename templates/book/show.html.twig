@@ -15,11 +15,17 @@
     <h2 class="book-author">{{ book.author }}</h2>
 
     {% if is_granted('ROLE_USER') %}
-        <div class="rating-container" data-book-id="{{ book.id }}">
-            <label for="star-rating">Votre note :</label>
-            <div class="star-rating" id="star-rating" data-current-rating="{{ userRating|default(0) }}"></div>
-            <div class="rating-average">Moyenne : {{ averageRating|default('Non noté') }}</div>
+        <div class="mt-3">
+            <form id="rating-form">
+                <input type="hidden" name="rating" id="rating-value">
+                <div id="star-rating" class="fs-3" style="cursor: pointer;"></div>
+            </form>
+            <div id="average-rating" class="mt-2 text-muted">
+                Note moyenne : {{ book.averageRating ?: 'Pas encore de note' }}/5
+            </div>
         </div>
+
+        {% include 'book/rating.js.twig' %}
     {% endif %}
 
     <button class="read-button">Lire</button>
@@ -29,10 +35,5 @@
     </div>
 </div>
 {% endblock %}
-
-{% block javascripts %}
-    <script src="{{ asset('js/book-rating.js') }}"></script>
-{% endblock %}
-
 
 
