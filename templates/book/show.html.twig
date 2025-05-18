@@ -14,6 +14,14 @@
     <h1 class="book-title">{{ book.title }}</h1>
     <h2 class="book-author">{{ book.author }}</h2>
 
+    {% if is_granted('ROLE_USER') %}
+        <div class="rating-container" data-book-id="{{ book.id }}">
+            <label for="star-rating">Votre note :</label>
+            <div class="star-rating" id="star-rating" data-current-rating="{{ userRating|default(0) }}"></div>
+            <div class="rating-average">Moyenne : {{ averageRating|default('Non noté') }}</div>
+        </div>
+    {% endif %}
+
     <button class="read-button">Lire</button>
 
     <div class="book-description">
@@ -21,5 +29,10 @@
     </div>
 </div>
 {% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/book-rating.js') }}"></script>
+{% endblock %}
+
 
 
