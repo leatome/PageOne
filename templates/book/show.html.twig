@@ -2,11 +2,6 @@
 
 {% block title %}{{ book.title }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-{% endblock %}
-
 {% block body %}
 <div class="book-details-container">
     <img src="{{ book.coverUrl }}" alt="{{ book.title }}" class="book-cover">
