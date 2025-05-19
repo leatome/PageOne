@@ -58,11 +58,18 @@ class Book
     #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'book')]
     private Collection $ratings;
 
+    /**
+     * @var Collection<int, UserBookCollection>
+     */
+    #[ORM\OneToMany(targetEntity: UserBookCollection::class, mappedBy: 'book')]
+    private Collection $userBookCollections;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->ratings = new ArrayCollection();
+        $this->userBookCollections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +271,36 @@ class Book
         if ($this->ratings->removeElement($rating)) {
             if ($rating->getBook() === $this) {
                 $rating->setBook(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserBookCollection>
+     */
+    public function getUserBookCollections(): Collection
+    {
+        return $this->userBookCollections;
+    }
+
+    public function addUserBookCollection(UserBookCollection $userBookCollection): static
+    {
+        if (!$this->userBookCollections->contains($userBookCollection)) {
+            $this->userBookCollections->add($userBookCollection);
+            $userBookCollection->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserBookCollection(UserBookCollection $userBookCollection): static
+    {
+        if ($this->userBookCollections->removeElement($userBookCollection)) {
+            // set the owning side to null (unless already changed)
+            if ($userBookCollection->getBook() === $this) {
+                $userBookCollection->setBook(null);
             }
         }
 

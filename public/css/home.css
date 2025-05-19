@@ -115,3 +115,8 @@ body {
 .star-rating .star.filled {
     color: #f39c12;
 }
+
+.btn-warning {
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.6);
+    border: 1px solid #d39e00;
+}

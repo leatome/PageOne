@@ -28,7 +28,26 @@
         {% include 'book/rating.js.twig' %}
     {% endif %}
 
-    <button class="read-button">Lire</button>
+<div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+    <a class="btn btn-primary btn-lg">Lire
+    </a>
+
+    {% if is_granted('ROLE_USER') %}
+        <button id="favorite-btn" class="btn btn-warning btn-lg text-dark">
+            {% if app.user.hasInCollection(book) %}
+                ★ Retirer des favoris
+            {% else %}
+                ☆ Ajouter aux favoris
+            {% endif %}
+        </button>
+    {% endif %}
+</div>
+
+{% if is_granted('ROLE_USER') %}
+    <div id="favorite-feedback" class="text-muted mt-2"></div>
+    {% include 'book/userBookCollection.js.twig' %}
+{% endif %}
+
 
     <div class="book-description">
         {{ book.description }}

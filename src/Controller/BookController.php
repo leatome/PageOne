@@ -12,22 +12,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Repository\RatingRepository;
+use App\Entity\UserBookCollection;
 
 final class BookController extends AbstractController
 {
     #[Route('/book/{id}', name: 'book_show')]
-    public function show(Book $book, RatingRepository $ratingRepo): Response
+    public function show(Book $book): Response
     {
-        $averageRating = $ratingRepo->getAverageForBook($book);
-        $userRating = null;
-        if ($this->isGranted('ROLE_USER')) {
-            $userRating = $ratingRepo->findOneBy(['book' => $book, 'user' => $this->getUser()])?->getRating();
-        }
-
         return $this->render('book/show.html.twig', [
             'book' => $book,
-            'averageRating' => $averageRating,
-            'userRating' => $userRating,
         ]);
     }
 
@@ -57,5 +50,33 @@ final class BookController extends AbstractController
         $average = round(array_sum($ratings) / count($ratings), 2);
 
         return new JsonResponse(['success' => true, 'average' => $average]);
+    }
+
+    #[Route('/book/{id}/toggle-favorite', name: 'book_toggle_favorite', methods: ['POST'])]
+    public function toggleFavorite(Book $book, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $existing = $em->getRepository(UserBookCollection::class)->findOneBy([
+            'userCollection' => $user,
+            'book' => $book,
+        ]);
+
+        if ($existing) {
+            $em->remove($existing);
+            $message = 'removed';
+        } else {
+            $favorite = new UserBookCollection();
+            $favorite->setUserCollection($user)->setBook($book);
+            $em->persist($favorite);
+            $message = 'added';
+        }
+
+        $em->flush();
+
+        return new JsonResponse(['success' => true, 'action' => $message]);
     }
 }
