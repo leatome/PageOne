@@ -51,11 +51,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'user')]
     private Collection $likes;
 
+    /**
+     * @var Collection<int, UserBookCollection>
+     */
+    #[ORM\OneToMany(mappedBy: 'userCollection', targetEntity: UserBookCollection::class, orphanRemoval: true)]
+    private Collection $bookCollections;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->ratings = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->bookCollections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -203,5 +210,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getCollections(): Collection 
+    {
+        return $this->bookCollections;
+    }
+
+    public function hasInCollection(Book $book): bool
+    {
+        foreach ($this->bookCollections as $entry) {
+            if ($entry->getBook() === $book) return true;
+        }
+        return false;
     }
 }

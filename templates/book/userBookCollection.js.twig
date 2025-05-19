@@ -1,0 +1,29 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.getElementById("favorite-btn");
+        const feedback = document.getElementById("favorite-feedback");
+
+        if (btn) {
+            btn.addEventListener("click", function () {
+                fetch('{{ path("book_toggle_favorite", { id: book.id }) }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.action === "added") {
+                            btn.innerHTML = "★ Retirer des favoris";
+                            feedback.innerText = "Ajouté aux favoris !";
+                        } else {
+                            btn.innerHTML = "☆ Ajouter aux favoris";
+                            feedback.innerText = "Retiré des favoris.";
+                        }
+                    }
+                });
+            });
+        }
+    });
+</script>
