@@ -15,6 +15,25 @@
         {% endblock %}
     </head>
     <body>
+        {% block navbar %}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand fs-3 fw-bold" href="{{ path('app_home') }}">PageOne</a>
+
+                    <form class="d-flex ms-auto me-3" method="get">
+                        <input class="form-control me-2" type="search" name="q" placeholder="Rechercher un livre..." aria-label="Search">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+
+                    <a class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-person"></i>
+                    </a>
+                </div>
+            </nav>
+        {% endblock %}
+
         {% block body %}{% endblock %}
     </body>
 </html>
