@@ -2,11 +2,6 @@
 
 {% block title %}{{ book.title }}{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
-{% endblock %}
-
 {% block body %}
 <div class="book-details-container">
     <img src="{{ book.coverUrl }}" alt="{{ book.title }}" class="book-cover">
@@ -28,26 +23,25 @@
         {% include 'book/rating.js.twig' %}
     {% endif %}
 
-<div class="d-flex flex-wrap align-items-center gap-3 mt-4">
-    <a class="btn btn-primary btn-lg">Lire
-    </a>
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
+        <a class="btn btn-primary btn-lg">Lire
+        </a>
+
+        {% if is_granted('ROLE_USER') %}
+            <button id="favorite-btn" class="btn btn-warning btn-lg text-dark">
+                {% if app.user.hasInCollection(book) %}
+                    ★ Retirer des favoris
+                {% else %}
+                    ☆ Ajouter aux favoris
+                {% endif %}
+            </button>
+        {% endif %}
+    </div>
 
     {% if is_granted('ROLE_USER') %}
-        <button id="favorite-btn" class="btn btn-warning btn-lg text-dark">
-            {% if app.user.hasInCollection(book) %}
-                ★ Retirer des favoris
-            {% else %}
-                ☆ Ajouter aux favoris
-            {% endif %}
-        </button>
+        <div id="favorite-feedback" class="text-muted mt-2"></div>
+        {% include 'book/userBookCollection.js.twig' %}
     {% endif %}
-</div>
-
-{% if is_granted('ROLE_USER') %}
-    <div id="favorite-feedback" class="text-muted mt-2"></div>
-    {% include 'book/userBookCollection.js.twig' %}
-{% endif %}
-
 
     <div class="book-description">
         {{ book.description }}

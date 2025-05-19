@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultats pour "{{ term }}"{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2 class="mb-4">Résultats pour "{{ term }}"</h2>
+
+        {% if books is empty %}
+            <p>Aucun livre trouvé.</p>
+        {% else %}
+            <div class="row">
+                {% for book in books %}
+                    <div class="col-6 col-md-4 col-lg-2 mb-4 d-flex justify-content-center">
+                        <div class="card">
+                            <a href="{{ path('book_show', {id: book.id}) }}" class="card-link" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ book.title }}">
+                                <img src="{{ book.coverUrl ?: 'https://via.placeholder.com/160x220?text=No+Image' }}" alt="{{ book.title }}" class="card-image img-thumbnail">
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
