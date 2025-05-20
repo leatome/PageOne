@@ -6,10 +6,15 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,9 +24,9 @@ class User
     #[ORM\Column(unique: true, length: 255)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $username = null;
-
+    /**
+     * @var string The hashed password
+     */
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
@@ -46,11 +51,18 @@ class User
     #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'user')]
     private Collection $likes;
 
+    /**
+     * @var Collection<int, UserBookCollection>
+     */
+    #[ORM\OneToMany(mappedBy: 'userCollection', targetEntity: UserBookCollection::class, orphanRemoval: true)]
+    private Collection $bookCollections;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->ratings = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->bookCollections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -70,18 +82,19 @@ class User
         return $this;
     }
 
-    public function getUsername(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
     {
-        return $this->username;
+        return (string) $this->email;
     }
 
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -127,7 +140,6 @@ class User
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getUser() === $this) {
                 $comment->setUser(null);
             }
@@ -157,7 +169,6 @@ class User
     public function removeRating(Rating $rating): static
     {
         if ($this->ratings->removeElement($rating)) {
-            // set the owning side to null (unless already changed)
             if ($rating->getUser() === $this) {
                 $rating->setUser(null);
             }
@@ -187,12 +198,30 @@ class User
     public function removeLike(Like $like): static
     {
         if ($this->likes->removeElement($like)) {
-            // set the owning side to null (unless already changed)
             if ($like->getUser() === $this) {
                 $like->setUser(null);
             }
         }
 
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getCollections(): Collection 
+    {
+        return $this->bookCollections;
+    }
+
+    public function hasInCollection(Book $book): bool
+    {
+        foreach ($this->bookCollections as $entry) {
+            if ($entry->getBook() === $book) return true;
+        }
+        return false;
     }
 }

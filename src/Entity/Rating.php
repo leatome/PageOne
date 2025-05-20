@@ -13,10 +13,11 @@ class Rating
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $score = null;
+    #[ORM\Column(type: 'float')]
+    private ?float $rating = null;
 
     #[ORM\ManyToOne(inversedBy: 'ratings')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Book $book = null;
 
     #[ORM\ManyToOne(inversedBy: 'ratings')]
@@ -28,15 +29,14 @@ class Rating
         return $this->id;
     }
 
-    public function getScore(): ?int
+    public function getRating(): ?float
     {
-        return $this->score;
+        return $this->rating;
     }
 
-    public function setScore(int $score): static
+    public function setRating(float $rating): static
     {
-        $this->score = $score;
-
+        $this->rating = $rating;
         return $this;
     }
 

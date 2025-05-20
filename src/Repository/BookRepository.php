@@ -16,28 +16,32 @@ class BookRepository extends ServiceEntityRepository
         parent::__construct($registry, Book::class);
     }
 
-    //    /**
-    //     * @return Book[] Returns an array of Book objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function searchBooksByTerm(string $term): array
+    {
+        $term = strtolower($term);
+        $qb = $this->createQueryBuilder('b');
 
-    //    public function findOneBySomeField($value): ?Book
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        // Recherche dans titre ou auteur
+        $qb->where('LOWER(b.title) LIKE :term')
+        ->orWhere('LOWER(b.author) LIKE :term')
+        ->setParameter('term', '%' . $term . '%');
+
+        $books = $qb->getQuery()->getResult();
+
+        // Recherche dans subjects
+        $allBooks = $this->findAll();
+        foreach ($allBooks as $book) {
+            foreach ($book->getSubjects() as $subject) {
+                if (stripos($subject, $term) !== false) {
+                    $books[] = $book;
+                    break;
+                }
+            }
+        }
+
+        // Suppression des doublons
+        $books = array_unique($books, SORT_REGULAR);
+
+        return $books;
+    }
 }

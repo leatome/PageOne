@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\UserBookCollection;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
@@ -55,11 +56,18 @@ class Book
     #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'book')]
     private Collection $ratings;
 
+    /**
+     * @var Collection<int, UserBookCollection>
+     */
+    #[ORM\OneToMany(targetEntity: UserBookCollection::class, mappedBy: 'book')]
+    private Collection $userBookCollections;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->ratings = new ArrayCollection();
+        $this->userBookCollections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -224,6 +232,16 @@ class Book
         return $this->ratings;
     }
 
+    public function getAverageRating(): ?float
+    {
+        if ($this->ratings->isEmpty()) {
+            return null;
+        }
+
+        $sum = array_reduce($this->ratings->toArray(), fn($carry, $rating) => $carry + $rating->getRating(), 0);
+        return round($sum / count($this->ratings), 1);
+    }
+
     public function addRating(Rating $rating): static
     {
         if (!$this->ratings->contains($rating)) {
@@ -239,6 +257,36 @@ class Book
         if ($this->ratings->removeElement($rating)) {
             if ($rating->getBook() === $this) {
                 $rating->setBook(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserBookCollection>
+     */
+    public function getUserBookCollections(): Collection
+    {
+        return $this->userBookCollections;
+    }
+
+    public function addUserBookCollection(UserBookCollection $userBookCollection): static
+    {
+        if (!$this->userBookCollections->contains($userBookCollection)) {
+            $this->userBookCollections->add($userBookCollection);
+            $userBookCollection->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserBookCollection(UserBookCollection $userBookCollection): static
+    {
+        if ($this->userBookCollections->removeElement($userBookCollection)) {
+            // set the owning side to null (unless already changed)
+            if ($userBookCollection->getBook() === $this) {
+                $userBookCollection->setBook(null);
             }
         }
 
