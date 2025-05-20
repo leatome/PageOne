@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<div class="container py-4 text-center">
+    <div class="mb-4">
+        <div class="mx-auto" style="width: 150px; height: 150px; border-radius: 50%; background: #ccc;">
+            <i class="bi bi-person-fill" style="font-size: 5rem; line-height: 150px;"></i>
+        </div>
+        <h3 class="mt-3">{{ user.email }}</h3>
+    </div>
+
+    {% if categories is not empty %}
+        <div class="mb-4">
+            <select id="category-select" class="form-select w-auto mx-auto">
+                <option value="">-- Sélectionner une catégorie --</option>
+                {% for name in categories|keys %}
+                    <option value="{{ name }}">{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="books-container" class="row justify-content-center gap-3">
+
+        </div>
+    {% else %}
+        <p>Aucun livre dans votre collection pour le moment.</p>
+    {% endif %}
+
+    <form action="{{ path('app_logout') }}" method="post" class="mt-5">
+        <button type="submit" class="btn btn-outline-danger">Se déconnecter</button>
+    </form>
+</div>
+
+<script>
+    const booksByCategory = {{ categories|json_encode|raw }};
+    const select = document.getElementById('category-select');
+    const container = document.getElementById('books-container');
+
+    select.addEventListener('change', () => {
+        container.innerHTML = '';
+        const selected = select.value;
+
+        if (selected && booksByCategory[selected]) {
+            booksByCategory[selected].forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const coverUrl = book.coverUrl ? book.coverUrl : 'https://via.placeholder.com/160x220?text=No+Image';
+
+                card.innerHTML = `
+                    <a href="/book/${book.id}" class="card-link" data-bs-toggle="tooltip" data-bs-placement="top" title="${book.title}">
+                        <img src="${coverUrl}" alt="${book.title}" class="card-image img-thumbnail">
+                    </a>
+                `;
+                container.appendChild(card);
+            });
+
+            // Réinitialise les tooltips Bootstrap
+            const tooltipTriggerList = [].slice.call(container.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+        }
+    });
+</script>
+
+{% endblock %}
