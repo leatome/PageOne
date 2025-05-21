@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Repository\RatingRepository;
 use App\Entity\UserBookCollection;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class BookController extends AbstractController
 {
@@ -78,5 +79,27 @@ final class BookController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['success' => true, 'action' => $message]);
+    }
+
+    #[Route('/book/{id}/read', name: 'book_read')]
+    public function read(Book $book, HttpClientInterface $httpClient): Response
+    {
+        $textUrl = $book->getTextUrl();
+
+        if (!$textUrl) {
+            throw $this->createNotFoundException("Ce livre ne contient pas de texte lisible.");
+        }
+
+        try {
+            $response = $httpClient->request('GET', $textUrl);
+            $content = $response->getContent();
+        } catch (\Exception $e) {
+            return new Response("Erreur lors de la récupération du texte.");
+        }
+
+        return $this->render('book/read.html.twig', [
+            'book' => $book,
+            'text' => $content,
+        ]);
     }
 }
