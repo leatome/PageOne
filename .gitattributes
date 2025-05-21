@@ -1,0 +1,30 @@
+# Configure les fins de ligne pour les fichiers texte
+* text=auto eol=lf
+
+# Spécifier explicitement les fichiers texte
+*.php text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.twig text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.sql text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+compose.yaml text eol=lf
+nginx.conf text eol=lf
+Makefile text eol=lf
+
+# Fichiers binaires
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
