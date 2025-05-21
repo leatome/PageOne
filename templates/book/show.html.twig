@@ -24,8 +24,7 @@
     {% endif %}
 
     <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
-        <a class="btn btn-primary btn-lg">Lire
-        </a>
+        <a href="{{ path('book_read', {'id': book.id}) }}" class="btn btn-primary btn-lg">Lire</a>
 
         {% if is_granted('ROLE_USER') %}
             <button id="favorite-btn" class="btn btn-warning btn-lg text-dark">
