@@ -4,14 +4,6 @@
 
 {% block body %}
 <div class="container py-4 px-2">
-    {% if app.user %}
-        <div class="text-end mb-3">
-            <form action="{{ path('app_logout') }}" method="post">
-                <button type="submit" class="btn btn-outline-danger">Se déconnecter</button>
-            </form>
-        </div>
-    {% endif %}
-
     <h1 class="mb-4">Nos catégories populaires</h1>
 
     {% for category in categories %}
