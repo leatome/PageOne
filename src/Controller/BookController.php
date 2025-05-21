@@ -93,6 +93,20 @@ final class BookController extends AbstractController
         try {
             $response = $httpClient->request('GET', $textUrl);
             $content = $response->getContent();
+
+            // Nettoyage du contenu Gutendex
+            $startMarker = '*** START OF THIS PROJECT GUTENBERG EBOOK';
+            $endMarker = '*** END OF THIS PROJECT GUTENBERG EBOOK';
+
+            $start = strpos($content, $startMarker);
+            $end = strpos($content, $endMarker);
+
+            if ($start !== false && $end !== false) {
+                // Premier saut de ligne après le marqueur START
+                $start = strpos($content, "\n", $start);
+                $content = substr($content, $start, $end - $start);
+            }
+
         } catch (\Exception $e) {
             return new Response("Erreur lors de la récupération du texte.");
         }
