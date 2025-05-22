@@ -6,9 +6,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\SecurityBundle\Security;
+use OpenApi\Annotations as OA;
 
 final class ProfilController extends AbstractController
 {
+    /**
+     * @OA\Get(
+     *     path="/profil",
+     *     summary="Page de profil utilisateur",
+     *     tags={"User"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Affiche la page profil avec la collection de livres par catégorie",
+     *         @OA\MediaType(mediaType="text/html")
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Accès refusé si l'utilisateur n'est pas connecté"
+     *     )
+     * )
+     */
     #[Route('/profil', name: 'user_profile')]
     public function profile(Security $security): Response
     {
