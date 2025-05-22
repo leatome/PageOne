@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Book;
 use App\Entity\Rating;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,9 +16,27 @@ use App\Repository\RatingRepository;
 use App\Entity\UserBookCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+#[Route('/book')]
 final class BookController extends AbstractController
 {
-    #[Route('/book/{id}', name: 'book_show')]
+    #[Route('/{id}', name: 'book_show', methods: ['GET'])]
+    #[OA\Get(
+        summary: "Afficher un livre",
+        description: "Renvoie les détails d'un livre spécifique par son ID",
+        tags: ['Book']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Détails du livre",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "id", type: "integer"),
+                new OA\Property(property: "title", type: "string"),
+                new OA\Property(property: "author", type: "string"),
+                new OA\Property(property: "description", type: "string", nullable: true),
+            ]
+        )
+    )]
     public function show(Book $book): Response
     {
         return $this->render('book/show.html.twig', [
@@ -25,7 +44,35 @@ final class BookController extends AbstractController
         ]);
     }
 
-    #[Route('/book/{id}/rate', name: 'book_rate', methods: ['POST'])]
+    #[Route('/{id}/rate', name: 'book_rate', methods: ['POST'])]
+    #[OA\Post(
+        summary: "Noter un livre",
+        description: "Permet à un utilisateur connecté de noter un livre entre 0.5 et 5 étoiles",
+        tags: ['Book']
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            type: "object",
+            required: ["rating"],
+            properties: [
+                new OA\Property(property: "rating", type: "number", format: "float", example: 4.5)
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Note enregistrée",
+        content: new OA\JsonContent(
+            type: "object",
+            properties: [
+                new OA\Property(property: "success", type: "boolean", example: true),
+                new OA\Property(property: "average", type: "float", example: 4.3)
+            ]
+        )
+    )]
+    #[OA\Response(response: 403, description: "Utilisateur non autorisé")]
+    #[OA\Response(response: 400, description: "Note invalide")]
     public function rate(Request $request, Book $book, EntityManagerInterface $em, Security $security, RatingRepository $ratingRepo): JsonResponse {
         $user = $security->getUser();
         if (!$user || !$this->isGranted('ROLE_USER')) {
@@ -53,7 +100,22 @@ final class BookController extends AbstractController
         return new JsonResponse(['success' => true, 'average' => $average]);
     }
 
-    #[Route('/book/{id}/toggle-favorite', name: 'book_toggle_favorite', methods: ['POST'])]
+    #[Route('/{id}/toggle-favorite', name: 'book_toggle_favorite', methods: ['POST'])]
+    #[OA\Post(
+        summary: "Ajouter ou retirer un livre des favoris",
+        description: "Bascule l'état de favori d'un livre pour l'utilisateur actuel",
+        tags: ['Book']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Résultat de l'action",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "success", type: "boolean"),
+                new OA\Property(property: "action", type: "string", example: "added")
+            ]
+        )
+    )]
     public function toggleFavorite(Book $book, EntityManagerInterface $em): JsonResponse
     {
         $user = $this->getUser();
@@ -81,7 +143,21 @@ final class BookController extends AbstractController
         return new JsonResponse(['success' => true, 'action' => $message]);
     }
 
-    #[Route('/book/{id}/read', name: 'book_read')]
+    #[Route('/{id}/read', name: 'book_read', methods: ['GET'])]
+    #[OA\Get(
+        summary: "Lire le contenu d’un livre",
+        description: "Renvoie le texte brut du livre si disponible",
+        tags: ['Book']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Texte du livre",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "text", type: "string")
+            ]
+        )
+    )]
     public function read(Book $book, HttpClientInterface $httpClient): Response
     {
         $textUrl = $book->getTextUrl();
